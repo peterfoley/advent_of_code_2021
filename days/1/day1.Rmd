@@ -1,0 +1,49 @@
+---
+title: "Day 1"
+output:
+  html_notebook
+---
+
+# Part 1
+
+<https://adventofcode.com/2021/day/1>
+
+```{r}
+input = readr::read_table("input.txt", col_names="depth", col_types="i")
+head(input)
+```
+
+
+count the number of times a depth measurement increases from the previous measurement
+
+```{r}
+library(dplyr)
+input %>%
+  summarize(
+    n = n(),
+    increases_over_previous = sum(diff(depth) > 0))
+```
+
+
+
+# Part 2
+
+<https://adventofcode.com/2021/day/1#part2>
+
+consider sums of a three-measurement sliding window.
+
+count the number of times the sum of measurements in this sliding window increases from the previous sum
+
+```{r}
+with_window= input %>%
+  mutate(sliding_3_sum = depth + slider::slide_sum(depth, before=2, complete=T),
+         sum_diff = coalesce(c(0,diff(sliding_3_sum)),0))
+with_window
+```
+
+```{r}
+with_window %>%
+  summarize(
+    n = n(),
+    increases_over_previous_window = sum(sum_diff > 0))
+```
