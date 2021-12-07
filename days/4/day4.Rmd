@@ -1,0 +1,148 @@
+---
+title: "Day 4"
+output: html_notebook
+---
+You're already almost 1.5km (almost a mile) below the surface of the ocean, already so deep that you can't see any sunlight. What you can see, however, is a giant squid that has attached itself to the outside of your submarine.
+
+Maybe it wants to play bingo?
+
+Bingo is played on a set of boards each consisting of a 5x5 grid of numbers. Numbers are chosen at random, and the chosen number is marked on all boards on which it appears. (Numbers may not appear on all boards.) If all numbers in any row or any column of a board are marked, that board wins. (Diagonals don't count.)
+
+The submarine has a bingo subsystem to help passengers (currently, you and the giant squid) pass the time. It automatically generates a random order in which to draw numbers and a random set of boards (your puzzle input).
+
+## Load data
+
+```{r}
+library(dplyr)
+input_file <- "real_input.txt"
+calls <- readr::read_lines(input_file, n_max=1) %>%
+  strsplit(",") %>%
+  unlist %>%
+  as.integer
+calls
+```
+
+
+```{r}
+board_rows_to_matrix <- function(board_lines) {
+  gsub(" +"," ",board_lines) %>%
+    gsub("^ ","",.) %>%
+    strsplit(" ", fixed=T) %>%
+    purrr::map(as.integer) %>%
+    do.call(rbind, .)
+}
+
+# boards is a list of (k x k) integer matrices representing each board
+boards <- tibble(row_text = readr::read_lines(input_file, skip=1)) %>%
+  mutate(input_row_idx = row_number(),
+         nchar_row = nchar(row_text)) %>%
+  mutate(board_idx = cumsum(nchar_row==0)) %>%
+  filter(nchar_row > 0) %>%
+  group_by(board_idx) %>%
+  summarize(text = list(row_text)) %>%
+  mutate(board = purrr::map(text, board_rows_to_matrix)) %>%
+  arrange(board_idx) %>%
+  pull(board)
+```
+
+```{r}
+long_df_from_matrix <- function(m) {
+  nrows = nrow(m)
+  ncols = ncol(m)
+  tibble(
+    value = c(m),
+    row = rep(seq_len(nrows), ncols),
+    col = rep(seq_len(ncols), each=nrows)
+  )
+}
+boards_long <- tibble(mat=boards) %>%
+  mutate(board = row_number()) %>%
+  mutate(nested = purrr::map(mat, long_df_from_matrix)) %>%
+  select(-mat) %>%
+  tidyr::unnest(nested)
+```
+
+```{r}
+# calculate when each row/col/board will win
+rounds = tibble(round = seq_along(calls), value=calls)
+
+cells_called_in_round <- boards_long %>%
+  left_join(rounds, by="value") %>%
+  mutate(round = coalesce(round, nrow(rounds)+1))
+
+row_completed <- cells_called_in_round %>%
+  group_by(board, row) %>%
+  summarize(row_round = max(round), .groups="drop")
+col_completed <- cells_called_in_round %>%
+  group_by(board, col) %>%
+  summarize(col_round = max(round), .groups="drop")
+board_wins_in_round <- inner_join(
+  row_completed,
+  col_completed,
+  "board"
+) %>%
+  group_by(board) %>%
+  summarize(round = min(row_round, col_round))
+board_wins_in_round
+```
+
+The score of the winning board can now be calculated. Start by finding the sum of all unmarked numbers on that board; in this case, the sum is 188. Then, multiply that sum by the number that was just called when the board won, 24, to get the final score, 188 * 24 = 4512.
+
+
+
+To guarantee victory against the giant squid, figure out which board will win first. What will your final score be if you choose that board?
+
+```{r}
+winner <- board_wins_in_round %>%
+  arrange(round) %>%
+  head(1)
+winner
+```
+
+
+```{r}
+calls_before_win <- calls[seq_len(winner$round)]
+calls_before_win
+```
+
+```{r}
+boards[[winner$board]]
+```
+
+```{r}
+filled <- boards[[winner$board]]
+filled[filled %in% calls_before_win] <- NA
+filled
+```
+
+
+```{r}
+last_call <- tail(calls_before_win,1)
+not_called <- setdiff(boards[[winner$board]], calls_before_win)
+sum(not_called)*last_call
+```
+
+
+# Part 2
+
+On the other hand, it might be wise to try a different strategy: let the giant squid win.
+
+You aren't sure how many bingo boards a giant squid could play at once, so rather than waste time counting its arms, the safe thing to do is to figure out which board will win last and choose that one. That way, no matter which boards it picks, it will win for sure.
+
+Figure out which board will win last. Once it wins, what would its final score be?
+
+```{r}
+last_completed <- board_wins_in_round %>%
+  arrange(round) %>%
+  tail(1)
+
+score <- function(board_id, round) {
+  calls_before_win <- calls[seq_len(round)]
+  last_call <- tail(calls_before_win,1)
+  not_called <- setdiff(boards[[board_id]], calls_before_win)
+  sum(not_called)*last_call
+}
+
+score(last_completed$board, last_completed$round)
+```
+
