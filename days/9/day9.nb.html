@@ -382,12 +382,13 @@ assign_and_leak &lt;- function(xy,val) {
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJvZChsYXJnZXN0XzMpXG5cbmBgYCJ9 -->
-<pre class="r"><code>prod(largest_3)
-</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmFzaW5fc2l6ZXMgPSB0YWJsZShiYXNpbiwgZXhjbHVkZT0wKVxubGFyZ2VzdF8zID0gdGFpbChzb3J0KGJhc2luX3NpemVzKSwzKVxucHJvZChsYXJnZXN0XzMpXG5gYGAifQ== -->
+<pre class="r"><code>basin_sizes = table(basin, exclude=0)
+largest_3 = tail(sort(basin_sizes),3)
+prod(largest_3)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDExMzRcbiJ9 -->
-<pre><code>[1] 1134</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDkyMDQ0OFxuIn0= -->
+<pre><code>[1] 920448</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 </div>
