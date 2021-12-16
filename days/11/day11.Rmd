@@ -1,0 +1,129 @@
+---
+title: "Day 11"
+output: html_notebook
+---
+
+You enter a large cavern full of rare bioluminescent dumbo octopuses! They seem to not like the Christmas lights on your submarine, so you turn them off for now.
+
+There are 100 octopuses arranged neatly in a 10 by 10 grid. Each octopus slowly gains energy over time and flashes brightly for a moment when its energy is full. Although your lights are off, maybe you could navigate through the cave without disturbing the octopuses if you could predict when the flashes of light will happen.
+
+Each octopus has an energy level - your submarine can remotely measure the energy level of each octopus (your puzzle input). For example:
+
+## Load data
+
+```{r}
+library(dplyr)
+library(purrr)
+library(tidyr)
+
+read <- function(f) {
+  lines <- readr::read_lines(f)
+  list_of_linevecs <- lines %>%
+    strsplit("") %>%
+    purrr::map(~matrix(as.integer(.), nrow=1)) %>%
+    do.call(rbind, .)
+}
+input <- read("real_input.txt")
+demo <- read("demo_input.txt")
+demo
+```
+
+The energy level of each octopus is a value between 0 and 9. Here, the top-left octopus has an energy level of 5, the bottom-right one has an energy level of 6, and so on.
+
+You can model the energy levels and flashes of light in steps. During a single step, the following occurs:
+
+* First, the energy level of each octopus increases by 1.
+* Then, any octopus with an energy level greater than 9 flashes. This increases the energy level of all adjacent octopuses by 1, including octopuses that are diagonally adjacent. If this causes an octopus to have an energy level greater than 9, it also flashes. This process continues as long as new octopuses keep having their energy level increased beyond 9. (An octopus can only flash at most once per step.)
+* Finally, any octopus that flashed during this step has its energy level set to 0, as it used all of its energy to flash.
+* Adjacent flashes can cause an octopus to flash on a step even if it begins that step with very little energy. Consider the middle octopus with 1 energy in this situation:
+
+```{r}
+propagate_flashes <- function(state) {
+  mask <- state*0+1 # 0/1 matrix, 1=able to flash in this step
+  while(any(state > 9)) {
+    flashing_now <- (state*0)+(state > 9)
+    impact_on_others <- flashing_now
+    # spread impact left/right
+    impact_on_others = (
+      impact_on_others +
+        cbind(0,impact_on_others[,-ncol(state)]) +
+        cbind(impact_on_others[,-1], 0)
+    )
+    # spread again up/down
+    impact_on_others = (
+      impact_on_others +
+        rbind(0,impact_on_others[-nrow(state),]) +
+        rbind(impact_on_others[-1,], 0)
+    )
+    mask = mask*(1-flashing_now)
+    state = (state+impact_on_others)*mask
+  }
+  state
+}
+
+
+next_state <- function(state, n=1) {
+  for(i in seq_len(n)) {
+    state <- propagate_flashes(state+1)
+  }
+  state
+}
+
+display <- function(state) {
+  state %>%
+    apply(1,paste, collapse='') %>%
+    paste(collapse='\n') %>%
+    cat
+}
+```
+
+```{r}
+demo %>%
+  next_state(100) %>%
+  display
+```
+
+```{r}
+flashes_after_n_steps <- function(state, n) {
+  flashes <- 0
+  for(i in seq_len(n)) {
+    state <- propagate_flashes(state+1)
+    flashes <- flashes + sum(state==0)
+  }
+  flashes
+}
+```
+
+```{r}
+flashes_after_n_steps(demo, 100)
+```
+
+```{r}
+flashes_after_n_steps(input, 100)
+```
+
+
+# Part 2
+
+If you can calculate the exact moments when the octopuses will all flash simultaneously, you should be able to navigate through the cavern. What is the first step during which all octopuses flash?
+
+
+```{r}
+steps_to_sync <- function(state) {
+  steps <- 0
+  while(any(state != 0)) {
+    steps <- steps+1
+    state <- next_state(state)
+  }
+  steps
+}
+```
+
+```{r}
+steps_to_sync(demo)
+```
+
+
+```{r}
+steps_to_sync(input)
+```
