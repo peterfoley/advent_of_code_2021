@@ -250,9 +250,23 @@ pre code {
 <h2>Load data</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShkcGx5cilcbmxpYnJhcnkocHVycnIpXG5saWJyYXJ5KHRpZHlyKVxuaW5wdXRfZmlsZSA8LSBcInJlYWxfaW5wdXQudHh0XCJcbmlucHV0IDwtIHJlYWRyOjpyZWFkX2xpbmVzKGlucHV0X2ZpbGUpXG5kZW1vIDwtIHJlYWRyOjpyZWFkX2xpbmVzKFwiZGVtb19pbnB1dC50eHRcIilcbmhlYWQoaW5wdXQpXG5gYGAifQ== -->
-<pre class="r"><code>library(dplyr)
-library(purrr)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShkcGx5cilcbmBgYCJ9 -->
+<pre class="r"><code>library(dplyr)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG5BdHRhY2hpbmcgcGFja2FnZTog4oCYZHBseXLigJlcblxuVGhlIGZvbGxvd2luZyBvYmplY3RzIGFyZSBtYXNrZWQgZnJvbSDigJhwYWNrYWdlOnN0YXRz4oCZOlxuXG4gICAgZmlsdGVyLCBsYWdcblxuVGhlIGZvbGxvd2luZyBvYmplY3RzIGFyZSBtYXNrZWQgZnJvbSDigJhwYWNrYWdlOmJhc2XigJk6XG5cbiAgICBpbnRlcnNlY3QsIHNldGRpZmYsIHNldGVxdWFsLCB1bmlvblxuIn0= -->
+<pre><code>
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShwdXJycilcbmxpYnJhcnkodGlkeXIpXG5pbnB1dF9maWxlIDwtIFwicmVhbF9pbnB1dC50eHRcIlxuaW5wdXQgPC0gcmVhZHI6OnJlYWRfbGluZXMoaW5wdXRfZmlsZSlcbmRlbW8gPC0gcmVhZHI6OnJlYWRfbGluZXMoXCJkZW1vX2lucHV0LnR4dFwiKVxuaGVhZChpbnB1dClcbmBgYCJ9 -->
+<pre class="r"><code>library(purrr)
 library(tidyr)
 input_file &lt;- &quot;real_input.txt&quot;
 input &lt;- readr::read_lines(input_file)
@@ -291,11 +305,12 @@ string_to_vec &lt;- function(x) {
 }
 string_to_vec(input[[1]])</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSBcIntcIiBcIltcIiBcIjxcIiBcIjxcIiBcIihcIiBcIltcIiBcIltcIiBcIntcIiBcIntcIiBcIltcIiBcIjxcIiBcIltcIiBcIltcIiBcIltcIiBcIjxcIiBcIj5cIiBcIihcIiBcIilcIiBcIl1cIiBcIntcIiBcIltcIiBcIl1cIiBcIjxcIiBcIj5cIiBcIn1cIiBcIl1cIiBcIl1cIlxuWzI4XSBcIjxcIiBcIltcIiBcIltcIiBcIntcIiBcIn1cIiBcIihcIiBcIilcIiBcIj5cIiBcIntcIiBcIltcIiBcIl1cIiBcIntcIiBcIn1cIiBcIn1cIiBcIl1cIiBcIj5cIiBcIj5cIiBcIl1cIiBcIltcIiBcIihcIiBcIihcIiBcIjxcIiBcIntcIiBcIntcIiBcIn1cIiBcIltcIiBcIl1cIlxuWzU1XSBcIn1cIiBcIntcIiBcIltcIiBcIl1cIiBcIltcIiBcIl1cIiBcIn1cIiBcIj5cIiBcIihcIiBcIntcIiBcIntcIiBcIn1cIiBcIntcIiBcIn1cIiBcIn1cIiBcIntcIiBcIntcIiBcIn1cIiBcIltcIiBcIl1cIiBcIn1cIiBcIilcIiBcIilcIiBcIilcIiBcIihcIiBcIltcIiBcIntcIlxuWzgyXSBcIihcIiBcIntcIiBcIn1cIiBcIltcIiBcIl1cIiBcIilcIiBcIn1cIiBcIihcIiBcIjxcIlxuIn0= -->
-<pre><code> [1] &quot;{&quot; &quot;[&quot; &quot;&lt;&quot; &quot;&lt;&quot; &quot;(&quot; &quot;[&quot; &quot;[&quot; &quot;{&quot; &quot;{&quot; &quot;[&quot; &quot;&lt;&quot; &quot;[&quot; &quot;[&quot; &quot;[&quot; &quot;&lt;&quot; &quot;&gt;&quot; &quot;(&quot; &quot;)&quot; &quot;]&quot; &quot;{&quot; &quot;[&quot; &quot;]&quot; &quot;&lt;&quot; &quot;&gt;&quot; &quot;}&quot; &quot;]&quot; &quot;]&quot;
-[28] &quot;&lt;&quot; &quot;[&quot; &quot;[&quot; &quot;{&quot; &quot;}&quot; &quot;(&quot; &quot;)&quot; &quot;&gt;&quot; &quot;{&quot; &quot;[&quot; &quot;]&quot; &quot;{&quot; &quot;}&quot; &quot;}&quot; &quot;]&quot; &quot;&gt;&quot; &quot;&gt;&quot; &quot;]&quot; &quot;[&quot; &quot;(&quot; &quot;(&quot; &quot;&lt;&quot; &quot;{&quot; &quot;{&quot; &quot;}&quot; &quot;[&quot; &quot;]&quot;
-[55] &quot;}&quot; &quot;{&quot; &quot;[&quot; &quot;]&quot; &quot;[&quot; &quot;]&quot; &quot;}&quot; &quot;&gt;&quot; &quot;(&quot; &quot;{&quot; &quot;{&quot; &quot;}&quot; &quot;{&quot; &quot;}&quot; &quot;}&quot; &quot;{&quot; &quot;{&quot; &quot;}&quot; &quot;[&quot; &quot;]&quot; &quot;}&quot; &quot;)&quot; &quot;)&quot; &quot;)&quot; &quot;(&quot; &quot;[&quot; &quot;{&quot;
-[82] &quot;(&quot; &quot;{&quot; &quot;}&quot; &quot;[&quot; &quot;]&quot; &quot;)&quot; &quot;}&quot; &quot;(&quot; &quot;&lt;&quot;</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSBcIntcIiBcIltcIiBcIjxcIiBcIjxcIiBcIihcIiBcIltcIiBcIltcIiBcIntcIiBcIntcIiBcIltcIiBcIjxcIiBcIltcIiBcIltcIiBcIltcIiBcIjxcIiBcIj5cIiBcIihcIiBcIilcIiBcIl1cIiBcIntcIlxuWzIxXSBcIltcIiBcIl1cIiBcIjxcIiBcIj5cIiBcIn1cIiBcIl1cIiBcIl1cIiBcIjxcIiBcIltcIiBcIltcIiBcIntcIiBcIn1cIiBcIihcIiBcIilcIiBcIj5cIiBcIntcIiBcIltcIiBcIl1cIiBcIntcIiBcIn1cIlxuWzQxXSBcIn1cIiBcIl1cIiBcIj5cIiBcIj5cIiBcIl1cIiBcIltcIiBcIihcIiBcIihcIiBcIjxcIiBcIntcIiBcIntcIiBcIn1cIiBcIltcIiBcIl1cIiBcIn1cIiBcIntcIiBcIltcIiBcIl1cIiBcIltcIiBcIl1cIlxuWzYxXSBcIn1cIiBcIj5cIiBcIihcIiBcIntcIiBcIntcIiBcIn1cIiBcIntcIiBcIn1cIiBcIn1cIiBcIntcIiBcIntcIiBcIn1cIiBcIltcIiBcIl1cIiBcIn1cIiBcIilcIiBcIilcIiBcIilcIiBcIihcIiBcIltcIlxuWzgxXSBcIntcIiBcIihcIiBcIntcIiBcIn1cIiBcIltcIiBcIl1cIiBcIilcIiBcIn1cIiBcIihcIiBcIjxcIlxuIn0= -->
+<pre><code> [1] &quot;{&quot; &quot;[&quot; &quot;&lt;&quot; &quot;&lt;&quot; &quot;(&quot; &quot;[&quot; &quot;[&quot; &quot;{&quot; &quot;{&quot; &quot;[&quot; &quot;&lt;&quot; &quot;[&quot; &quot;[&quot; &quot;[&quot; &quot;&lt;&quot; &quot;&gt;&quot; &quot;(&quot; &quot;)&quot; &quot;]&quot; &quot;{&quot;
+[21] &quot;[&quot; &quot;]&quot; &quot;&lt;&quot; &quot;&gt;&quot; &quot;}&quot; &quot;]&quot; &quot;]&quot; &quot;&lt;&quot; &quot;[&quot; &quot;[&quot; &quot;{&quot; &quot;}&quot; &quot;(&quot; &quot;)&quot; &quot;&gt;&quot; &quot;{&quot; &quot;[&quot; &quot;]&quot; &quot;{&quot; &quot;}&quot;
+[41] &quot;}&quot; &quot;]&quot; &quot;&gt;&quot; &quot;&gt;&quot; &quot;]&quot; &quot;[&quot; &quot;(&quot; &quot;(&quot; &quot;&lt;&quot; &quot;{&quot; &quot;{&quot; &quot;}&quot; &quot;[&quot; &quot;]&quot; &quot;}&quot; &quot;{&quot; &quot;[&quot; &quot;]&quot; &quot;[&quot; &quot;]&quot;
+[61] &quot;}&quot; &quot;&gt;&quot; &quot;(&quot; &quot;{&quot; &quot;{&quot; &quot;}&quot; &quot;{&quot; &quot;}&quot; &quot;}&quot; &quot;{&quot; &quot;{&quot; &quot;}&quot; &quot;[&quot; &quot;]&quot; &quot;}&quot; &quot;)&quot; &quot;)&quot; &quot;)&quot; &quot;(&quot; &quot;[&quot;
+[81] &quot;{&quot; &quot;(&quot; &quot;{&quot; &quot;}&quot; &quot;[&quot; &quot;]&quot; &quot;)&quot; &quot;}&quot; &quot;(&quot; &quot;&lt;&quot;</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -337,17 +352,13 @@ match_pairs(input[[1]])</code></pre>
 <p>Find the first illegal character in each corrupted line of the navigation subsystem. What is the total syntax error score for those errors?</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW5wdXQgJT4lXG4gIG1hcF9kYmwobWF0Y2hfcGFpcnMpXG5cbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW5wdXQgJT4lXG4gIG1hcF9kYmwobWF0Y2hfcGFpcnMpICU+JSBcbiAgc3VtXG5gYGAifQ== -->
 <pre class="r"><code>input %&gt;%
-  map_dbl(match_pairs)
-</code></pre>
+  map_dbl(match_pairs) %&gt;% 
+  sum</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSAyNTEzNyAyNTEzNyAgICAgMCAgICAgMCAgICAgMCAgICAgMCAgMTE5NyAgMTE5NyAgICAgMCAgICAgMCAgICAgMCAgICAgMCAgICAgMCAgMTE5NyAgICAgMCAgMTE5NyAgICAgMyAyNTEzN1xuWzE5XSAgICA1NyAgICAgMCAgICAgMCAgICAgMCAgICAgMCAgMTE5NyAgICA1NyAgICAgMCAgICAgMCAgICAgMCAgICAgMCAgICAgMyAyNTEzNyAgICAgMCAgICAgMCAgICAgMyAgICAgMCAgICAgMFxuWzM3XSAgICA1NyAgICAgMCAgICAgMCAgICAgMyAgMTE5NyAgICAgMCAgMTE5NyAgICAgMCAyNTEzNyAyNTEzNyAgICAgMCAgICAgMCAgICAgMyAyNTEzNyAgICAgMCAgICA1NyAgICAgMCAyNTEzN1xuWzU1XSAyNTEzNyAgICAgMCAgICAgMCAgMTE5NyAyNTEzNyAgICAgMCAgICAgMCAgICAgMCAgICAgMyAyNTEzNyAgICAgMCAgMTE5NyAgICA1NyAgMTE5NyAgICA1NyAgICA1NyAgICAgMyAgMTE5N1xuWzczXSAgICA1NyAyNTEzNyAgICAgMCAgMTE5NyAgICAgMCAgICAgMCAyNTEzNyAgMTE5NyAgICAgMCAgICAgMCAgICAgMCAgICA1NyAgICAgMCAgICAgMCAgICAgMCAgMTE5NyAgMTE5NyAyNTEzN1xuIn0= -->
-<pre><code> [1] 25137 25137     0     0     0     0  1197  1197     0     0     0     0     0  1197     0  1197     3 25137
-[19]    57     0     0     0     0  1197    57     0     0     0     0     3 25137     0     0     3     0     0
-[37]    57     0     0     3  1197     0  1197     0 25137 25137     0     0     3 25137     0    57     0 25137
-[55] 25137     0     0  1197 25137     0     0     0     3 25137     0  1197    57  1197    57    57     3  1197
-[73]    57 25137     0  1197     0     0 25137  1197     0     0     0    57     0     0     0  1197  1197 25137</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDM3MDQwN1xuIn0= -->
+<pre><code>[1] 370407</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -418,6 +429,10 @@ complete_pairs &lt;- function(x) {
 
 complete_pairs(demo[[1]])</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICB9IFxuMjg4OTU3IFxuIn0= -->
+<pre><code>     } 
+288957 </code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
