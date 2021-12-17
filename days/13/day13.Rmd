@@ -1,0 +1,89 @@
+---
+title: "Day 13"
+output: html_notebook
+---
+You reach another volcanically active part of the cave. It would be nice if you could do some kind of thermal imaging so you could tell ahead of time which caves are too hot to safely enter.
+
+Fortunately, the submarine seems to be equipped with a thermal camera! When you activate it, you are greeted with:
+
+Congratulations on your purchase! To activate this infrared thermal imaging
+camera system, please enter the code found on page 1 of the manual.
+Apparently, the Elves have never used this feature. To your surprise, you manage to find the manual; as you go to open it, page 1 falls out. It's a large sheet of transparent paper! The transparent paper is marked with random dots and includes instructions on how to fold it up (your puzzle input).
+
+## Load data
+
+```{r}
+library(dplyr)
+library(purrr)
+library(tidyr)
+
+read <- function(f) {
+  lines <- readr::read_lines(f)
+  
+  xy <- lines %>%
+    grep("^\\d+,\\d+$",.,val=T) %>%
+    tibble(xy=.) %>%
+    separate(xy,into=c("x","y"),sep=",") %>%
+    mutate_all(~as.integer(.)+1)
+  folds <- lines %>%
+    grep("^fold along",.,val=T) %>%
+    gsub("^fold along ","",.) %>%
+    tibble(axis_i=.)%>%
+    separate(axis_i, into=c("axis","i"),sep="=") %>%
+    mutate(i=as.integer(i)+1)
+  list(xy=xy, folds=folds)
+}
+input <- read("real_input.txt")
+demo <- read("demo_input.txt")
+demo$folds
+```
+
+
+```{r}
+fold <- function(xy, axis, at) {
+  i <- xy[[axis]]
+  xy[[axis]] <- ifelse(i <= at, i, at - (i - at))
+  xy
+}
+```
+
+The transparent paper is pretty big, so for now, focus on just completing the first fold. After the first fold in the example above, 17 dots are visible - dots that end up overlapping after the fold is completed count as a single dot.
+
+```{r}
+count_dots <- function(xy) {
+  nrow(unique(xy))
+}
+
+apply_folds <- function(xy, folds) {
+  for(j in seq_len(nrow(folds))) {
+    xy <- fold(xy, folds$axis[[j]], folds$i[[j]])
+  }
+  xy
+}
+```
+```{r}
+with(input, apply_folds(xy, folds %>% head(1))) %>%
+  count_dots
+```
+
+
+Finish folding the transparent paper according to the instructions. The manual says the code is always eight capital letters.
+
+What code do you use to activate the infrared thermal imaging camera system?
+
+
+```{r}
+final_dots <- with(input, apply_folds(xy, folds))
+```
+
+```{r}
+rev_axis <- function(i) {
+  max(i) - i + 1
+}
+display <- function(xy, ...) {
+  out <- matrix(0,nrow=max(xy$x), ncol=max(xy$y))
+  out[as.matrix(unique(xy[,c("x","y")]))] <- 1
+  image(out, ...)
+}
+display(final_dots %>% mutate(x=x, y=rev_axis(y)), asp=1/8)
+```
