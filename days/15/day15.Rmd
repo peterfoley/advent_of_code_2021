@@ -1,0 +1,233 @@
+---
+title: "Day 15"
+output: html_notebook
+---
+
+You've almost reached the exit of the cave, but the walls are getting closer together. Your submarine can barely still fit, though; the main problem is that the walls of the cave are covered in chitons, and it would be best not to bump any of them.
+
+The cavern is large, but has a very low ceiling, restricting your motion to two dimensions. The shape of the cavern resembles a square; a quick scan of chiton density produces a map of risk level throughout the cave (your puzzle input). For example:
+
+## Load data
+
+```{r}
+library(dplyr)
+library(purrr)
+library(tidyr)
+
+read <- function(f) {
+  lines <- readr::read_lines(f)
+  charmat <- strsplit(lines,"") %>%
+    do.call(rbind,.)
+  mat <- array(0L, dim=dim(charmat))
+  mat[] = as.numeric(charmat[])
+  mat
+}
+input <- read("real_input.txt")
+demo <- read("demo_input.txt")
+demo
+```
+
+
+```{r}
+naive_best <- function(risk) {
+  # propagate from only down/right
+  best <- risk*Inf
+  nc <- ncol(risk)
+  nr <- nrow(risk)
+  d <- dim(risk)
+  # start at the lower right (endpoint) and work left, then work up
+  best[nr,nc] <- 0
+  
+  # fill in right column and bottom row
+  best[nr,-nc] = rev(cumsum(rev(risk[nr,-1])))
+  best[-nr,nc] = rev(cumsum(rev(risk[-1, nc])))
+  for(j in rev(seq_len(nc-1))) {
+    for(i in rev(seq_len(nr-1))) {
+      best[i,j] <- min(
+        best[i+1,j]+risk[i+1,j],
+        best[i,j+1]+risk[i,j+1]
+        )
+    }
+  }
+  best
+}
+
+empty_best <- function(risk) {
+  best = risk*Inf
+  best[nrow(best),ncol(best)] <- 0
+  best
+}
+
+all_coords <- function(mat) {
+  nr=nrow(mat)
+  nc=ncol(mat)
+  expand_grid(i=rev(seq_len(nr)), j=rev(seq_len(nc))) %>%
+    with(map2(i,j,c))
+}
+
+lower_right <- function(mat) {
+  list(c(nrow(mat),ncol(mat)))
+}
+
+optimize_best <- function(risk, best=empty_best(risk), start_check = lower_right(best)) {
+  nc <- ncol(risk)
+  nr <- nrow(risk)
+  d <- dim(risk)
+  
+  propagate_improvements <- function(pos) {
+    cost_to_neighbors <- best[t(pos)]+risk[t(pos)]
+    # see who pos can help
+    steps = list(r=c(0,1),d=c(-1,0),l=c(0,-1),u=c(1,0))
+    check_one <- function(newpos) {
+      valid_pos <- all(newpos >= 1, newpos <= d) 
+      if(valid_pos) {
+        can_improve <- best[t(newpos)] > cost_to_neighbors
+        if(can_improve) {
+          best[t(newpos)] <<- cost_to_neighbors
+          return(list(newpos))
+        }
+      }
+      # either invalid or can't improve
+      return(list())
+    }
+    check_next <- steps %>%
+      map(~.+pos) %>%
+      map(check_one) %>%
+      unlist(recursive=F)
+      
+    check_next
+  }
+  
+  # iterate until there are no more improvements
+  # ensure everything is checked at least once
+  check_next <- start_check
+  while(length(check_next)>0) {
+    this_pos <- check_next[[1]]
+    check_later <- check_next[-1]
+    new_checks <- propagate_improvements(this_pos)
+    check_next <- union(check_later, new_checks)
+  }
+  best
+}
+```
+
+```{r}
+optimize_best(demo)[1,1]
+```
+
+```{r}
+optimize_best(input, naive_best(input), start_check = )[1,1]
+```
+
+# Part 2
+
+Now that you know how to find low-risk paths in the cave, you can try to find your way out.
+
+The entire cave is actually five times larger in both dimensions than you thought; the area you originally scanned is just one tile in a 5x5 tile area that forms the full map. Your original map tile repeats to the right and downward; each time the tile repeats to the right or downward, all of its risk levels are 1 higher than the tile immediately up or left of it. However, risk levels above 9 wrap back around to 1. So, if your original map had some position with a risk level of 8, then that same position on each of the 25 total tiles would be as follows:
+
+```{r}
+tiny <- matrix(1:9,3)
+lrep <- function(x, n) map(seq_len(n), function(...) x)
+biggify <- function(base) {
+  base %>%
+  lrep(5) %>%
+  map2(as.list(0:4), ~.x+.y) %>%
+  do.call(cbind,.) %>%
+  lrep(5) %>%
+  map2(0:4, ~.x+.y) %>%
+  do.call(rbind,.) %>%
+  {((.-1)%%9) + 1}
+}
+big <- biggify(input)
+dim(big)
+```
+
+
+```{r}
+best_path <- function(best) {
+  # start at 1,1 then find the best step until we hit nr,nc
+  nr <- nrow(best)
+  nc <- ncol(best)
+  d <- dim(best)
+  stepmat = list(r=c(0,1),d=c(-1,0),l=c(0,-1),u=c(1,0)) %>%
+    do.call(cbind,.)
+  next_best <- function(pos) {
+    next_pos <- stepmat+pos
+    valid_next <- ((next_pos >= 1) & (next_pos <= d)) %>%
+      colSums %>%
+      magrittr::equals(2) %>%
+      {next_pos[,.,drop=F]}
+    next_vals <- best[t(valid_next)]+risk[t(valid_next)]
+    best_next <- valid_next[,which.min(next_vals)]
+    c(best_next)
+  }
+  
+  pos=c(1,1)
+  steps <- list()
+  while(any(pos != c(nr,nc))) {
+    pos <- next_best(pos)
+    steps <- c(steps, list(pos))
+  }
+  do.call(rbind, steps)
+}
+vals <- function(risk) {
+  
+}
+path_points <- function(best, ...) {
+  path <- rbind(c(1,1),best_path(best))
+  impoints(path[,1], path[,2], ...)
+}
+```
+
+
+
+```{r}
+risk <- biggify(input)
+naive <- naive_best(risk)
+naive_path <- best_path(naive)
+mat_to_list <- function(m) map(seq_len(nrow(m)), ~m[.,])
+real <- optimize_best(risk, naive, start_check = rev(mat_to_list(naive_path)))
+real[1,1]
+```
+
+
+```{r}
+disp <- function(x,levs=100,...) {
+  col = hcl.colors(levs, "YlOrRd", rev = TRUE)
+  breaks = seq(min(x),max(x),length.out=levs+1)
+  image(t(x[rev(seq_len(nrow(x))),,drop=F]),col=col,breaks=breaks, ...)
+}
+impoints <- function(x,y,xmax=max(x), ymax=max(y), ...) {
+  points(
+    (y-1)/(ymax-1),
+    (xmax-x)/(xmax-1),
+    ...
+  )
+}
+image_text <- function(mat, ...){
+  i = rep(seq(0,1,length.out=nrow(mat)),ncol(mat))
+  j = rep(seq(0,1,length.out=ncol(mat)),each=nrow(mat))
+  x = j
+  y = 1-i
+  text(x,y,mat[])
+}
+disp(demo, useRaster=T, asp=1)
+image_text(demo)
+```
+
+```{r}
+best <- optimize_best(demo)
+disp(best,asp=1,useRaster=T, levs=50)
+path_points(best, cex=4, pch=19, col="white")
+image_text(risk)
+```
+
+```{r}
+best_path_cost <- function(best, risk) {
+  path <- best_path(best)
+  step_cost <- risk[path]
+  sum(step_cost)
+}
+best_path_cost(best, demo)
+```
+
